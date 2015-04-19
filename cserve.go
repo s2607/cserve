@@ -24,7 +24,7 @@ func cam(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Header().Set("Expires", time.Now().Format(http.TimeFormat))
 	w.Header().Set("Cache-Control=", "no-cache")
-	out, err := exec.Command("v4l2grab", "-q", "15", "-W", "260", "-H", "180", "-o", "./o.jpg").Output()
+	out, err := exec.Command("v4l2grab", "-q", "35", "-W", "120", "-H", "140", "-o", "./o.jpg").Output()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -62,12 +62,14 @@ func index(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./index.html")
 	lacc(r)
 }
+func index2(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "/var/www"+r.URL.Path)
+	fmt.Print("/var/www/" + r.URL.Path)
+	lacc(r)
+}
 func main() {
 	http.HandleFunc("/stats/", last)
 	http.HandleFunc("/cam/", cam)
-	http.HandleFunc("/", notfound)
-	http.Handle("/files", http.FileServer(http.Dir("/var/www/")))
-	http.HandleFunc("/index.html", index)
-	//	http.Handle("/", http.FileServer(http.Dir("./")))
+	http.HandleFunc("/", index2)
 	http.ListenAndServe(":80", nil)
 }
