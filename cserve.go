@@ -67,9 +67,26 @@ func index2(w http.ResponseWriter, r *http.Request) {
 	fmt.Print("/var/www/" + r.URL.Path)
 	lacc(r)
 }
+func tailable(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("begin stream")
+	w.Header().Set("Content-Type", "audio/x-raw")
+	w.Header().Set("Expires", time.Now().Format(http.TimeFormat))
+	w.Header().Set("Cache-Control=", "no-cache")
+	out, err := exec.Command("tail", "-f", "/var/www/source.wav").Output()
+	//TODO: this must return  a reader and not a string in order to stream
+	if err != nil {
+		fmt.Println(err)
+	}
+	io.WriteString(w, string(out))
+	if err != nil {
+		io.WriteString(w, "AAAAaaaah")
+	}
+	lacc(r)
+}
 func main() {
 	http.HandleFunc("/stats/", last)
 	http.HandleFunc("/cam/", cam)
+	http.HandleFunc("/stream.wav", tailable)
 	http.HandleFunc("/", index2)
 	http.ListenAndServe(":80", nil)
 }
