@@ -64,6 +64,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 func index2(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "/var/www"+r.URL.Path)
+	if r.RequestURI == "/" {
+		io.WriteString(w, "<pre>\n")
+		http.ServeFile(w, r, "/var/wwwmotd")
+	}
 	fmt.Print("/var/www/" + r.URL.Path)
 	lacc(r)
 }
