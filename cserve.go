@@ -66,7 +66,7 @@ func index2(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "/var/www"+r.URL.Path)
 	if r.RequestURI == "/" {
 		io.WriteString(w, "<pre>\n")
-		http.ServeFile(w, r, "/var/wwwmotd")
+		http.ServeFile(w, r, "/etc/issue.net")
 	}
 	fmt.Print("/var/www/" + r.URL.Path)
 	lacc(r)
@@ -87,10 +87,16 @@ func tailable(w http.ResponseWriter, r *http.Request) {
 	}
 	lacc(r)
 }
+func lt(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	io.WriteString(w, "Did you mean <a href=\"http://laptop.swiley.net:9980/\">laptop.swiley.net:9980</a>?") //TODO:autmatic temporary redirect
+	lacc(r)
+}
 func main() {
 	http.HandleFunc("/stats/", last)
 	http.HandleFunc("/cam/", cam)
 	http.HandleFunc("/stream.wav", tailable)
 	http.HandleFunc("/", index2)
+	http.HandleFunc("laptop.swiley.net/", lt)
 	http.ListenAndServe(":80", nil)
 }
